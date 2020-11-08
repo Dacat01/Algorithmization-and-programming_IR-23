@@ -17,183 +17,164 @@ class Hamstr
 {
 public:
 
-    int  id(int a)                     //Знаходження розташування елемента
+    int FoodForOneHamster(int DailyNorm, int greed, int neighbours)     // Розрахунок споживання їжі хом'яком
     {
-        return a / 2 - 1;
+        return DailyNorm + greed * neighbours;
     }
 
-    int Largest(int arr[], int counter) //Знаходження найбільшого елемента
+    int Largest(int array[], int HamstersTaken)           //Знаходження найбільшого елемента
     {
+        int largest = array[0], index = 0;
 
-        int largest = arr[0], k = 2;
-
-        for (int i = 1; i < counter; i++)
+        for (int i = 1; i < HamstersTaken; i++)
         {
-            if (largest <= arr[i])
+            if (largest <= array[i])
             {
-                largest = arr[i];
-                k += 2;
+                largest = array[i];
+                index = i;
             }
         }
-
-        return k;
+        return index;
     }
 
 
-    int Quantity(int arr[])
+    int AmountOfHamsters(int InputArray[])
     {
+        int FoodAmount = InputArray[0],         //ЗАПАС ЇЖІ
+         HamstersQuantity = InputArray[1],      //КІЛЬКІСТЬ ХОМ'ЯКІВ
+         HamsterLocation = 2,
+         FoodEaten = 0, 
+         HamstersTaken = HamstersQuantity,
+         InputArrayLength = HamstersQuantity * 2 + 2;;
 
-        int S = arr[0]; //ЗАПАС ЇЖІ
-        int C = arr[1]; //КІЛЬКІСТЬ ХОМ'ЯКІВ
+        for (int i = 2; i < InputArrayLength; i += 2)        // Чи можу прогодувати "C" хом'ячків
+            FoodEaten += FoodForOneHamster(InputArray[i], InputArray[i + 1], (HamstersTaken - 1));
+        if (FoodEaten <= FoodAmount)
+            return HamstersTaken;
 
-        int i,j,x = 0, counter = C;
-     
-        for (i = 2; i < C * 2 + 2; i += 2)      // Чи можу прогодувати "C" хом'ячків
-            x += arr[i] + arr[i + 1] * (counter - 1);
-        if (x <= S)
-            return counter;
 
-        x = 0;
-        counter--;
+        FoodEaten = 0;
+        HamstersTaken--;
 
-        while (counter > 1)                     // Чи можу прогодувати від "C - 1" до 2 хом'ячків
+        while (HamstersTaken > 1)                       // В межах від  HamstersQuantity-1 до 1 
         {
-            int* tmp_array = new int[counter];
-            j = 2;
+            int* AmountPerHamster = new int[HamstersTaken];
 
-            for (i = 0; i < C; i++)
+            for (int i = 0; i < HamstersQuantity; i++)
             {
-                if (i < counter)
-                    tmp_array[i] = arr[j] + arr[j + 1] * (counter-1);
-
+                if (i < HamstersTaken)
+                    AmountPerHamster[i] = FoodForOneHamster(InputArray[HamsterLocation], InputArray[HamsterLocation + 1], (HamstersTaken - 1));
                 else
                 {
-                    int tmp = Largest(tmp_array, counter);
-                    int food = arr[j] + arr[j + 1] * (counter-1);
+                    int LargestElementId = Largest(AmountPerHamster, HamstersTaken);
+                    int food = FoodForOneHamster(InputArray[HamsterLocation], InputArray[HamsterLocation + 1], (HamstersTaken - 1));
 
-                    if (arr[tmp] + arr[tmp + 1] * (counter - 1) > food)
-                        tmp_array[id(tmp)] = food;
-                    
+                    if (AmountPerHamster[LargestElementId] > food)
+                        AmountPerHamster[LargestElementId] = food;
                 }
-                j += 2;
+                HamsterLocation += 2;
             }
 
-/*
-            cout << "-----------" << endl;
-            for (i = 0; i < counter; i++)
-            {
-                cout << tmp_array[i] << endl;
-            }
-            cout << "-----------" << endl;
-*/
+            for (int i = 0; i < HamstersTaken; i++)
+                FoodEaten += AmountPerHamster[i];
+            if (FoodEaten <= FoodAmount)
+                return HamstersTaken;
 
 
-            for (i = 0; i < counter; i++)
-                x += tmp_array[i];
-            if (x <= S)
-                return counter;
+            HamstersTaken--;
+            FoodEaten = 0;          //Reset value
+            HamsterLocation = 2;    //Reset value
 
-            x = 0;
-            counter--;
-            delete[] tmp_array;
-
+            delete[] AmountPerHamster;
         }
 
-        for (i = 2; i < C * 2 + 2; i += 2)      // Чи можу прогодувати 1 хом'ячка
+        for (int i = 2; i < InputArrayLength; i += 2)      // Чи можу прогодувати 1 хом'ячка
         {
-            x = arr[i];
-            if (x <= S)
-                return counter;
+            FoodEaten = InputArray[i];
+            if (FoodEaten <= FoodAmount)
+                return HamstersTaken;
         }
 
-        return 0;                               // Якщо не можу прогодувати ні 1 хом'ячка
+        return 0;                                         // Якщо не можу прогодувати ні 1 хом'ячка
     }
 };
 //------------------------------------------------------------------
 
-
-int main()
+int*   read_file(string path)
 {
-    Hamstr myObj;
-
-    string path = "hamstr_in.txt";
-
     std::string line;
+    std::ifstream in_1(path);
 
-    std::ifstream in(path);
+    int HamstersQuantity = 0, FoodAmount = 0, counter = 0, ArrayLength;
+    string TemporaryString;
 
-    int i = 0, j, length_;
-    int mas1[2];
-
-    string tmp;
-
-    if (in.is_open())
+    while (in_1.is_open())
     {
-        while (i < 2)
+        getline(in_1, line);
+
+        switch (counter)
         {
-            getline(in, line);
-
-
-            mas1[i] = stoi(line);       //Зчитування перших двох рядків у масив 
-            i++;
+        case 0:
+            FoodAmount = stoi(line);
+            break;
+        case 1:
+            HamstersQuantity = stoi(line);
+            break;
+        default:
+            in_1.close();
+            break;
         }
+        counter++;
     }
-    in.close();
 
-    int mas_length = mas1[1] * 2 + 2;
+    ArrayLength = HamstersQuantity * 2 + 2;
+    int* HamstersArray = new int[ArrayLength];
 
-    int* array = new int[mas_length];
-    array[0] = mas1[0];
-    array[1] = mas1[1];
-    i = 0;
-
+    HamstersArray[0] = FoodAmount;
+    HamstersArray[1] = HamstersQuantity;
 
     std::ifstream in_2(path);
+    counter = 0;
+
     if (in_2.is_open())
     {
         while (getline(in_2, line))
         {
-
-            if (i < 2)
-            {
-            }
-            else {
-                length_ = line.length();
-                j = 0;
-
-
-                while (j < length_)
+            if (counter >= 2) {
+                int LineIndex = 0;             
+                while (LineIndex < line.length())
                 {
-
-
-                    if (line[j] != ' ')
-                        tmp += line[j];
-                    else {
-                        array[i] = stoi(tmp);
-                        tmp.clear();
+                    if (line[LineIndex] != ' ')
+                        TemporaryString += line[LineIndex];
+                    else
+                    {
+                        HamstersArray[counter] = stoi(TemporaryString);
+                        TemporaryString.clear();
                     }
-
-                    j++;
+                    LineIndex++;
                 }
-                i++;
-                array[i] = stoi(tmp);
-                tmp.clear();
+                counter++;
+                HamstersArray[counter] = stoi(TemporaryString);
+                TemporaryString.clear();
             }
-            i++;
+            counter++;
         }
-
     }
     in_2.close();
-    //---------------------------------------------------------------------
 
+    return HamstersArray;
+}
 
+int main()
+{
+    Hamstr HamstersQuantity;            //об'єкт класу Hamstr
 
-    int x = myObj.Quantity(array);
+    string path = "hamstr_in.txt";
 
-    delete[] array;
+    int hamsters = HamstersQuantity.AmountOfHamsters(read_file(path));
+
 
     ofstream hamstr_out("hamstr_out.txt");
-
-    hamstr_out << x;
+    hamstr_out << hamsters;
     hamstr_out.close();
 }
