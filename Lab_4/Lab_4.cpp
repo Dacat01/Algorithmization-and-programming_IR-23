@@ -2,8 +2,6 @@
 #include <fstream>
 #include <stdio.h>
 #include <string>
-#include <list>
-#include <iterator>
 #include <vector>
 using namespace std;
 
@@ -11,204 +9,119 @@ using namespace std;
 class Fantazer
 {
 public:
-    std::vector< string > result;
+    std::vector< string > binary_exponent_values;
 
- //   string result[100];
-    int counter = 0;
+    string sequence;
+    int number;
+    int result = 0;
 
-    int final_result = 0;
-    /*
-        if (str.compare(0, length, bin_str) == 0)  //Чи співпадає 
-        std::cout << "123" << endl;
 
-    std::cout << str << endl;
-
-    str = str.substr(length);               //Обрізати str
-    std::cout << str << endl;
-
-    */
-
- //   std::cout << myObj.result.size() << endl;
-
-    void check_string(string STR)
+    void check_string(void)
     {
-
-/*
-        for (int i = result.size() - 1; i < 0; i--)
+        int id = binary_exponent_values.size() - 1;                                    // Set to highest value in vector 
+   
+        while (sequence.length() != 0)       
         {
-            std::size_t found = STR.find(result[i]);
-            if (found = std::string::npos)
-                result.pop_back();
-        }
-*/
-
-        int tmp = result.size()-1;
-//        cout << "STR =  " << STR << endl;
-//        cout <<"STR.length() =  "<< STR.length() << endl;
-
- //       cout << "result 0 = " << result[0] << endl;
- //       cout << "result 1 = " << result[1] << endl;
-/*
-        cout << "result 1 = " << result[tmp] << endl;
-        cout << "result[tmp].length() = " << result[tmp].length() << endl;
-
-        if (STR.compare(0, result[tmp].length(), result[tmp])==0)
-            cout << "------------- = " << STR.length() << endl;
- */
-
-
-
-
-        while (STR.length() != 0)
-        {
- 
-
-            if (STR.compare(0, result[tmp].length(), result[tmp]) == 0)  //Чи співпадає 
+            if (sequence.compare(0, binary_exponent_values[id].length(), binary_exponent_values[id]) == 0) // If first X characters is equal
             {
-                cout << "-------------"  << endl;
+                result++;                                         
 
-                final_result++;
+                sequence.erase(0, binary_exponent_values[id].length());                // delete first X characters 
 
-                cout << "Str = " << STR << endl;
-
-                STR.erase(0, result[tmp].length());
-
- //               cout << "result[tmp].length() = " << result[tmp].length() << endl;
-
-                cout << "Str = " << STR << endl;
-
-                cout << "STR.length() =  " << STR.length() << endl;
-                tmp = result.size() - 1;
+                id = binary_exponent_values.size() - 1;                                // Set to highest value in vector 
             }
             else
             {
-                tmp--;
+                id--;           
+
+                if (id == -1)                                                       // If string can't be cutted in pieces
+                {
+                    result = -1;
+                    return;
+                }
             }
-
-            
-
-
-
-
-
-
-
-
-/*
-            if (tmp == -1)
-                return;
-            cout << "counter = " << counter << endl;
-            cout << "tmp = " << tmp << endl;
-
-            if (STR.compare(0, result[tmp].length(), result[tmp]) == 0)  //Чи співпадає 
-            {
-                final_result++;
-                tmp = counter;
-                cout << "Str = " << STR << endl;
-                STR = STR.substr(0, result[tmp].length());
-                cout << "result[tmp].length() = " << result[tmp].length() << endl;
-                cout << "Str = " << STR << endl;
-            }
-   */
-
-
-
- //           tmp --;
         }
     }
 
 
-    void count_power(int length, int N)
+    void count_power( int length)
+    {
+        long long value=0;
+        int counter = 0;
+       
+        string binary_string;
+        bool bin;
+
+        while (value < UINT_MAX)
         {
-            int tmp;
-            int pow_len = 0;
-            int bin;
-            string bin_str;
+            value = pow(number, counter);
+            counter++;
 
+//            if (tmp > UINT_MAX)     
+//               return;
 
-            int a = 0;
-            while (length >= pow_len)
+            if (value < UINT_MAX)
             {
-                a++;
-                if (a == 5)
-                    return;
-                tmp = pow(N, counter);
-
-                while (tmp > 0)
+                while (value > 0)                                        // Decimal to Binary conversion start
                 {
-                    bin = tmp % 2;
-                    bin_str += to_string(bin);
-                    tmp /= 2;
+                    bin = value % 2;
+                    binary_string += to_string(bin);
+                    value /= 2;
                 }
-                pow_len = bin_str.length();
-                 
-                if (length >= pow_len)
-                {
+                reverse(binary_string.begin(), binary_string.end());    // Decimal to Binary conversion end
 
-                    reverse(bin_str.begin(), bin_str.end());
+                if (sequence.find(binary_string) != std::string::npos)  // If bin_string is in given string
+                    binary_exponent_values.push_back(binary_string);        
 
-                    result.push_back(bin_str);        //Занести bin_str у масив
-
-                    bin_str = "";
-
-                    //               cout << "counter = " << counter << endl;
-
-                    counter++;
-                }
+                binary_string = "";
             }
         }
+    }
 
-    };
+
+    void read_file(string path)
+    {
+        int  position = 0;
+
+        std::string line;
+        std::ifstream in(path);
+        std::string delimiter = " ";
+
+        if (in.is_open())
+        {
+            getline(in, line);
+
+            if ((position = line.find(delimiter)) != std::string::npos)
+            {
+                sequence = line.substr(0, position);
+                line.erase(0, position + delimiter.length());
+                number = stoi(line);
+            }
+
+            in.close();
+        }
+    }
+
+
+    void fantazer(string path)
+    {
+        read_file(path);
+        count_power(sequence.length());
+        check_string();
+
+        std::cout << "result = " << result << endl << endl;
+    }
+
+};
 
 
 
 int main()
 {
-    string input_data = "111111011101";
-    //  1, 1111101, 1, 101,
-    int N = 5;
-    
+    string path = "fantazer.txt";
+
     Fantazer myObj;
     
-    input_data = "11111010001111101000110010011001001100100110010011001001111101000"; //2
-    N = 10;
-
-    myObj.count_power(input_data.length(), N);
-
-
-      myObj.check_string(input_data);
-    std::cout <<"result = "<< myObj.final_result << endl << endl;
-
-
+    myObj.fantazer(path);
    
-    std::cout << myObj.result[0] << endl;
-    std::cout << myObj.result[1] << endl;
-
-    /*
-    std::cout << myObj.result[2] << endl;
-    std::cout << myObj.result[3] << endl;
-    std::cout << myObj.result[4] << endl;
-    std::cout << myObj.result[5] << endl;
-    std::cout << myObj.result[6] << endl;
-    */
-/*
-
-    if (str.compare(0, length, bin_str) == 0)  //Чи співпадає 
-        std::cout << "123" << endl;
-
-    std::cout << str << endl;
-
-    str = str.substr(length);               //Обрізати str
-    std::cout << str << endl;
-
-    */
-    //        std::cout << "reversed:  " << bin_str << endl;
-
-     //  }
-
-
-     //   std::string str2 = str.substr(0, 1);     // "think"
-
-    //    std::cout << str2;
-
 }
