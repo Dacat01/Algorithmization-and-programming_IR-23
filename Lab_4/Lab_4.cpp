@@ -9,7 +9,7 @@ using namespace std;
 class Fantazer
 {
 public:
-    std::vector < string > binary_exponent_values;
+    std::vector < string > binary_exponent_values;                                      // vector with binary values which are in given sequence
 
     string sequence;
     int number;
