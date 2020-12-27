@@ -16,7 +16,6 @@ vector<int> KMP(string line, string pattern)
         return matches;
     }
 
-
     for (int i = 1; i <= pattern.size(); i++)               //building table
     {
         pos = table[i - 1];
