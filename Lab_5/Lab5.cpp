@@ -17,7 +17,7 @@ vector<int> KMP(string line, string pattern)
     }
 
 
-    for (int i = 1; i <= pattern.size(); i++)
+    for (int i = 1; i <= pattern.size(); i++)               //building table
     {
         pos = table[i - 1];
 
@@ -29,7 +29,7 @@ vector<int> KMP(string line, string pattern)
  //       cout << "T[i]: " << table[i] << endl;
     }
 
-    while (line_position < line.size())
+    while (line_position < line.size())                     //search algorithm
     {
         if (pattern[pattern_position] == line[line_position])
         {
