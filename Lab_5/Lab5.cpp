@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-vector<int> KMP(string line, string pattern)
+vector<int> KMP(string line, string pattern)        //O(n+m)
 {
     vector<int> table(pattern.size() + 1, -1);
     vector<int> matches;
@@ -16,16 +16,17 @@ vector<int> KMP(string line, string pattern)
         return matches;
     }
 
+
     for (int i = 1; i <= pattern.size(); i++)               //building table
     {
         pos = table[i - 1];
 
         while (pos != -1 && pattern[pos] != pattern[i - 1])
             pos = table[pos];
-
         table[i] = pos + 1;     
 
- //       cout << "T[i]: " << table[i] << endl;
+//       cout << "T[i]: " << table[i] << endl;
+
     }
 
     while (line_position < line.size())                     //search algorithm
@@ -53,13 +54,18 @@ vector<int> KMP(string line, string pattern)
 
     }
 
+    if (matches.empty())
+    {
+        matches.push_back(-1);
+    }
+
     return matches;
 }
 
 int main()
 {
-    string str = "abcabcdAAAABAAAAabcabcdABBBAAAABabcabcd";
-    string patt = "abcabcd";
+    string str = "AABBABAA";
+    string patt = "AB";
 
     vector<int> results = KMP(str, patt);
 
