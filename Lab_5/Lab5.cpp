@@ -55,9 +55,8 @@ vector<int> KMP(string line, string pattern)        //O(n+m)
     }
 
     if (matches.empty())
-    {
         matches.push_back(-1);
-    }
+
 
     return matches;
 }
