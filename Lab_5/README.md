@@ -12,12 +12,14 @@
 Приклад:
 In:
 AABBABAA, AB
+
 Out:
 1 4
 
 
 In:
 AABBABAA, abc
+
 Out:
 -1
 
