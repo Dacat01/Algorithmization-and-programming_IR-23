@@ -32,11 +32,11 @@ Out:
 1) Можна використати IDE 
 2) або встановити  gcc компілятор для можливості компіляції cpp файлів через командний рядок:
 
-	git clone https://github.com/Dacat01/Algorithmization-and-programming_IR-23.git
+	- git clone https://github.com/Dacat01/Algorithmization-and-programming_IR-23.git
 
-	у командному рядку перейти у папку з файлом .cpp
+	- у командному рядку перейти у папку з файлом .cpp
 
-	для створення exe файлу необхідно ввести:
+	- для створення exe файлу необхідно ввести:
 		g++ Lab5.cpp -o назва файлу (без ніяких розширень)
-	і відкрити exe файл
+	- відкрити exe файл
 		назва файлу
