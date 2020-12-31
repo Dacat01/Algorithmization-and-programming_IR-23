@@ -10,6 +10,7 @@
 	
 	
 Приклад:
+
 In:
 AABBABAA, AB
 
